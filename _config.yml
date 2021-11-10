@@ -32,7 +32,7 @@ timezone: Asia/Shanghai
 
 ## => Author and Social
 ##############################
-Ricky Yel:
+author:
   type      : person
   name      : Ricky Yel
   url       : 
