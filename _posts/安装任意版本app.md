@@ -1,0 +1,87 @@
+---
+title: 安装任意版本app
+subtitle: 借助brew命令
+date: 2022-11-20 19:44:48
+lang: zh
+author: Ricky Yel
+show_edit_on_github: true
+tags: zsh brew
+show_tags: true
+
+---
+
+[toc]
+
+# 安装任意版本app
+
+## 查找历史版本
+
+在终端输入并得到如下信息，默认是最新的版本。
+
+```shell
+$ brew info XXX
+# 例如
+$ brew info baidunetdisk  # 百度网盘
+
+>brew info baidunetdisk
+baidunetdisk: 4.4.1
+https://pan.baidu.com/download
+/opt/homebrew/Caskroom/baidunetdisk/4.4.1 (130B)
+From: https://github.com/Homebrew/homebrew-cask/blob/HEAD/Casks/baidunetdisk.rb
+==> Names
+Baidu NetDisk
+百度网盘
+==> Description
+Cloud storage service
+==> Artifacts
+BaiduNetdisk_mac.app (App)
+==> Analytics
+install: 417 (30 days), 1,326 (90 days), 4,785 (365 days)
+
+```
+
+在浏览器打开From后面的链接：
+
+![截屏2022-01-09 下午5.25.24]({{"/assets/安装任意版本app.assets/截屏2022-01-09 下午5.25.24.png" | absolute_url}})
+
+可以看到当前最新的版本是`4.4.1`
+
+点击History查看之前的版本，例如需要安装`3.7.5`
+
+![截屏2022-01-09 下午5.27.08]({{"/assets/安装任意版本app.assets/截屏2022-01-09 下午5.27.08.png" | absolute_url}})
+
+点击箭头所示的位置，就可以看到`3.7.5`版本的`.rb`文件
+
+点击raw，并复制此时的网址：`https://github.com/Homebrew/homebrew-cask/blob/6d53cabc225bd4317279e5186d129fa721d5989a/Casks/baidunetdisk.rb`
+
+![截屏2022-01-09 下午5.29.58]({{"/assets/安装任意版本app.assets/截屏2022-01-09 下午5.29.58.png" | absolute_url}})
+
+## 安装
+
+```shell
+$ brew install https://github.com/Homebrew/homebrew-cask/blob/6d53cabc225bd4317279e5186d129fa721d5989a/Casks/baidunetdisk.rb
+```
+
+## 切换版本
+
+若以前安装过别的版本，并且希望二者都存在，需要使用特定的版本：
+
+```shell
+$ brew switch <name> <version>
+# 例
+$ brew switch baidunetdisk 3.7.5
+```
+
+## 固定/取消固定 版本
+
+```shell
+$ brew pin $FORMULA      # 锁定某个包
+$ brew unpin $FORMULA    # 取消锁定
+# 锁定百度网盘为3.7.5版本
+$ brew pin baidunetdisk
+```
+
+
+
+
+
