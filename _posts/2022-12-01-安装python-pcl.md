@@ -5,7 +5,7 @@ date: 2022-12-01 18:23:34
 lang: zh
 author: Ricky Yel
 show_edit_on_github: true
-tags: PCL python_pcl
+tags: PCL python-pcl
 show_tags: true
 
 ---
