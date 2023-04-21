@@ -10,6 +10,8 @@ show_tags: true
 
 ---
 
+topic 借助 rosbag play 和 record 进行修改，而 frame_id 借助 bag_tools 进行修改。
+<!--more-->
 # rosbag 修改 topic 和 frame_id
 
 ## 查看 bag info
