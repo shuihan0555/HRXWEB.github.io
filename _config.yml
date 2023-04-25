@@ -178,7 +178,9 @@ analytics:
 
 ## => Build
 ##############################
-markdown    : kramdown
+markdown    : redcarpet
+redcarpet:
+  extensions: ["fenced_code_blocks", "autolink", "tables", "strikethrough"]
 highlighter : rouge
 permalink   : date
 
