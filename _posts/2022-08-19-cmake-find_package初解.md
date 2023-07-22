@@ -43,13 +43,13 @@ cmke通过提供 `find_package` 这个命令来处理上述情况，它会搜寻
 
 > 相对来说更可靠的方法，因为软件包的信息总是和软件包本身保持同步
 
-<font color = purple >config files 通常都能在类似于 XXX/lib/cmake/<PackageName> 目录下找到</font>
+<font color = purple >config files 通常都能在类似于 `XXX/lib/cmake/\<PackageName\>` 目录下找到</font>
 
-cmake配置文件的名称并没有固定的要求。但是如果有些其他奇怪名字的.cmake文件，应该都会已经在<PackageName>config.cmake中通过 `include()` 命令将它们的配置也载入好，所以用户一般只需要 `find_package()` 即可
+cmake配置文件的名称并没有固定的要求。但是如果有些其他奇怪名字的.cmake文件，应该都会已经在\<PackageName\>config.cmake中通过 `include()` 命令将它们的配置也载入好，所以用户一般只需要 `find_package()` 即可
 
 ### 配置文件搜索过程<sup>1.2</sup>
 
-配置文件的明细必须是 <PackageName>Config.cmake 或者 <LowerCasePackageName>-config.cmake。后面可能还有version，比如<PackageName>ConfigVersion.cmake。这一配置文件是CMake进入包的 entry point。
+配置文件的明细必须是 \<PackageName\>Config.cmake 或者 <LowerCasePackageName>-config.cmake。后面可能还有version，比如\<PackageName\>ConfigVersion.cmake。这一配置文件是CMake进入包的 entry point。
 
 1. 默认的系统包管理目录 CMAKE_SYSTEM_PREFIX_PATH：`/usr` `/usr/local`
 
@@ -82,7 +82,7 @@ cmake配置文件的名称并没有固定的要求。但是如果有些其他奇
 
    4. 可以看到所有的配置文件都会自动生成在XXX的子目录 `lib/cmake` 下。因此CMAKE_PREFIX_PATH也是添加XXX即可，不需要具体指定到包含`.cmake`的目录 `XXX/lib/cmake/`
 
-3. 设置<mark>cmake变量</mark> <PackageName>\_DIR。注意此时这个路径不是一个prefix。而是要具体指向一个包含配置文件的目录,比如说 `set(SomePackage_DIR /opt/seompackage/lib/cmake/SomePackage)`。注意它和上面两个prefix是不一样的!!!。<font color = red>注意这里的<PackageName>\_DIR 是cmake变量，和下面同名的<mark>cmake环境变量</mark>区分开‼️‼️</font>
+3. 设置<mark>cmake变量</mark> \<PackageName\>\_DIR。注意此时这个路径不是一个prefix。而是要具体指向一个包含配置文件的目录,比如说 `set(SomePackage_DIR /opt/seompackage/lib/cmake/SomePackage)`。注意它和上面两个prefix是不一样的!!!。<font color = red>注意这里的\<PackageName\>\_DIR 是cmake变量，和下面同名的<mark>cmake环境变量</mark>区分开‼️‼️</font>
 
 ## 搜索方法2--module mode
 
@@ -91,8 +91,8 @@ cmake配置文件的名称并没有固定的要求。但是如果有些其他奇
 如果包没有提供config-style file，可以通过寻找 FindSomePackage.cmake 文件来配置包。相比于config模式，module模式：
 
 1. find module file 不是由包本身提供的，因此即使找到了文件也不代表能够正确的配置包
-2. 类似于config模式的CMAKE_PREFIX_PATH，cmake在CMAKE_MODULE_PATH中找寻find module file。注意这不是PREFIX，所以要指定到直接包含 Find<PackageName>.cmake 的目录。
-3. cmake可能跳过某些第三方库提供的 Find<PackageName>.cmake 文件。因为有些软件包的Find<PackageName>.cmake 文件是由 CMake 社区维护的，而不是由每个软件包的开发者提供的。很容易出现第三方软件包的更新速度比 Find 模块的更新速度更快，所以对于CMake社区来说负担很重，所以不提供标准的find module。
+2. 类似于config模式的CMAKE_PREFIX_PATH，cmake在CMAKE_MODULE_PATH中找寻find module file。注意这不是PREFIX，所以要指定到直接包含 Find\<PackageName\>.cmake 的目录。
+3. cmake可能跳过某些第三方库提供的 Find\<PackageName\>.cmake 文件。因为有些软件包的Find\<PackageName\>.cmake 文件是由 CMake 社区维护的，而不是由每个软件包的开发者提供的。很容易出现第三方软件包的更新速度比 Find 模块的更新速度更快，所以对于CMake社区来说负担很重，所以不提供标准的find module。
 
 ## 查询路径
 
@@ -175,16 +175,16 @@ find_package(protobuf REQUIRED)
 <prefix> 即 installation prefix 按照如下的<mark>顺序</mark>搜寻（如果设定了 `NO_DEFAULT_PATH` 那么所有的 `NO_*` 都会enable）：
 
 1. 软件包独有的安装路径前缀（此过程会跳过，如果传入了 `NO_PACKAGE_ROOT_PATH` or `set(CMAKE_FIND_USE_PACKAGE_ROOT_PATH FALSE)`：
-   1. cmake 变量: <PackageName>_ROOT
-   2. cmake 变量: <PACKAGENAME>_ROOT
-   3. 环境变量: <PackageName>_ROOT
-   4. 环境变量: <PACKAGENAME>_ROOT
+   1. cmake 变量: \<PackageName\>_ROOT
+   2. cmake 变量: \<PackageName\>_ROOT
+   3. 环境变量: \<PackageName\>_ROOT
+   4. 环境变量: \<PackageName\>_ROOT
 2. cmake变量<VAR>（可以使用-DVAR=value 来指定, value是用分号分隔的list。但是还是在CMkaeLists.txt里面set变量值比较清晰明了）（此过程会跳过，如果传入了 `NO_CMAKE_PATH` or `set(CMAKE_FIND_USE_CMAKE_PATH FALSE)`)：
    1. CMAKE_PREFIX_PATH
    2. CMAKE_FRAMEWORK_PATH
    3. CMAKE_APPBUNDLE_PATH
 3. cmake环境变量（此过程会跳过，如果传入了 `NO_CMAKE_ENVIRONMENT_PATH` or `set(CMAKE_FIND_USE_SYSTEM_ENVIRONMENT_PATH FALSE)`）:
-   1. `<PackageName>_DIR` <font color =purple>这里设定的<PackageName>_DIR是<mark>cmake环境变量</mark>，搜索的过程其被当作prefix，所以在Unix系统下，若它直接包含了config-style file，根据上面表格的[表格](#prefix)，是找不到的‼️‼️</font>
+   1. `\<PackageName\>_DIR` <font color =purple>这里设定的\<PackageName\>_DIR是<mark>cmake环境变量</mark>，搜索的过程其被当作prefix，所以在Unix系统下，若它直接包含了config-style file，根据上面表格的[表格](#prefix)，是找不到的‼️‼️</font>
    2. CMAKE_PREFIX_PATH
    3. CMAKE_FRAMEWORK_PATH
    4. CMAKE_APPBUNDLE_PATH
@@ -199,7 +199,6 @@ find_package(protobuf REQUIRED)
 8. Search paths stored in the CMake [System Package Registry](https://cmake.org/cmake/help/latest/manual/cmake-packages.7.html#system-package-registry).（和6类似，不说了）
 9. `PATHS` 选项指定的路径
 
-<font color = drakpink>有一个问题是之前说的是<PackageName>_DIR要直接包含 config-style file，但是这边条目3又把它当成prefix来使用，需要明确一下到底以哪个为准，或者哪里理解有偏差</font>
 
 ## 使用方法
 
