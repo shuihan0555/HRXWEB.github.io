@@ -16,6 +16,4 @@ show_tags: true
 
 实在是不够优雅，但是我也没办法了。如果你有更好的解决方案，欢迎联系我。
 
-1
-
 <embed src="https://HRXWEB.github.io/2022-08-19-cmake-find_package初解.pdf" type="application/pdf" width="100%" height="600px" />
