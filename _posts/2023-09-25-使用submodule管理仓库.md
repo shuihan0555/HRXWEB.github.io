@@ -57,6 +57,21 @@ $ git submoule update 			# 拉取子模块的代码并checkout到正确的版本
 $ git submodule update --init <--recursive> # --recursive 参数可以保证子仓库的子仓库也一并拉取
 ```
 
+## 如何切换带有submodule的仓库的分支
+
+可能主仓库的两个分支索引的submodule版本不一样，所以当切换完分支之后：
+
+```shell
+# 例如一个实际的例子，可以从输出看到提示我们submodule被修改了
+$ git checkout main
+M	test-submodule
+Switched to branch 'main'
+Your branch is up to date with 'origin/main'.
+
+# 此时我们需要做的事情就是更新submodule，更新引用的版本
+$ git submodule update
+```
+
 ## 更新submodule/主仓库
 
 ```shell
