@@ -95,7 +95,7 @@ show_tags: true
    $ cd /path/to/colcon-mixin-repository && python lint.py
    ```
 
-4. <font color = red>更新源：`colcon mixin update default`</font>，此时也会检查一些语法问题，有的话请根据提示修改。<font color =red>每次更新index.yaml 或者 .mixin 文件都需要update</font>
+4. <font color = red>更新源：</font> `colcon mixin update default` 此时也会检查一些语法问题，有的话请根据提示修改。<font color =red>每次更新index.yaml 或者 .mixin 文件都需要update</font>
 
 5. 测试是否可用
 
@@ -103,7 +103,6 @@ show_tags: true
 
       ```shell
       $ colcon mixin show
-      ...
       - openmp-off
         --cmake-clean-cache: None # 注意这个None
         cmake-args: ['-DCMAKE_VERBOSE_MAKEFILE=ON', "-DCMAKE_TOOLCHAIN_FILE='/root/cross_compile/cmake-toolchains/generic_linux.cmake'"]
@@ -134,7 +133,7 @@ show_tags: true
 
    3. 使用：`colcon build --mixin openmp-on`，可以发现log出来的信息为：
 
-      ```plain text
+      ```shell
       CMake Warning (dev) at CMakeLists.txt:6 (message):
         TOOLCHAINFILE:/root/cross_compile/cmake-toolchains/generic_linux.cmake
       This warning is for project developers.  Use -Wno-dev to suppress it.
@@ -146,7 +145,7 @@ show_tags: true
 
    4. 使用：`colcon build --mixin openmp-on`，log信息为：
 
-      ```plain text
+      ```shell
       colcon build --mixin openmp-off
       WARNING:colcon.colcon_mixin.mixin.mixin_argument:Mixin key '--cmake-clean-cache' is not a valid argument for 'build'
       Starting >>> OpenMPTest
