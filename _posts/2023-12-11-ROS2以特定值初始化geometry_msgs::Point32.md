@@ -1,7 +1,7 @@
 ---
 title: ROS2以特定值初始化geometry_msgs::Point32
 subtitle:
-date: 2023-12-10 13:29:11 +0800
+date: 2023-12-11 13:29:11 +0800
 lang: zh
 author: Ricky Yel
 show_edit_on_github: true
