@@ -17,7 +17,7 @@ source 和 bash 是两个不同的命令，用于在 Bash shell 中执行脚本�
 source 命令：
 
 1. source 命令用于在<font color =red>当前</font>的 Bash shell 环境中执行指定的脚本文件。也可以使用点号 . 来代替 source 命令。
-2.， source 命令会将指定的脚本文件中的命令和环境变量直接加载到当前的 shell 中，使得其中的变量和函数可以在当前的 shell 环境中生效。
+2. source 命令会将指定的脚本文件中的命令和环境变量直接加载到当前的 shell 中，使得其中的变量和函数可以在当前的 shell 环境中生效。
 通常用于执行设置环境变量、函数和别名等的脚本文件，以确保所做的更改对当前的 shell 会话立即生效。
 
 bash 命令：
