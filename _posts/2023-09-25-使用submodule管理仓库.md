@@ -109,6 +109,23 @@ $ git push --recurse-submodules=
 
 # 方法2--设置模式永远都为check
 $ git config --global push.recurseSubmodules check
+# 当设置为check之后，若在没有推送submodule的情况下就推送主仓库，就会出现如下报错：
+>>> The following submodule paths contain changes that can
+not be found on any remote:
+  thirdparty
+
+Please try
+
+        git push --recurse-submodules=on-demand
+
+or cd to the path and use
+
+        git push
+
+to push them to a remote.
+
+fatal: Aborting.
+fatal: the remote end hung up unexpectedly
 ```
 
 ## 为什么每次 update 后 submodule 的 HEAD 状态变为了 detached?
