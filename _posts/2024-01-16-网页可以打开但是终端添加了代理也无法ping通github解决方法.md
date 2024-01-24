@@ -17,7 +17,7 @@ show_tags: true
 
 解决方法：
 
-1. 访问https://github.com.ipaddress.com/www.github.com 获取目前github.com实际ip
+1. 访问 [https://github.com.ipaddress.com/www.github.com](https://github.com.ipaddress.com/www.github.com) 获取目前github.com实际ip
 2. 在Mac/Linux终端执行如下命令
     
     ```shell
