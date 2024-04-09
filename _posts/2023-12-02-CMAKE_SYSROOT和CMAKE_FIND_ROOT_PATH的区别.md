@@ -5,7 +5,7 @@ date: 2023-12-02 22:36:03
 lang: zh
 author: Ricky Yel
 show_edit_on_github: true
-tags: cmake
+tags: CMake
 show_tags: true
 
 ---

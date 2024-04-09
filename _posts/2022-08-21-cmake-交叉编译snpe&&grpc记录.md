@@ -5,7 +5,7 @@ date: 2022-08-21 19:07:48
 lang: zh
 author: Ricky Yel
 show_edit_on_github: true
-tags: gRPC snpe cmake
+tags: gRPC snpe CMake
 show_tags: true
 
 ---
