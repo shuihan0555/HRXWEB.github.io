@@ -368,13 +368,10 @@ nothing to commit, working tree clean
 ```shell
 ```
 
-# 删除submodule
+# 删除submodule<sup>3</sup>
 
 ```shell
-$ git submodule deinit -f --all # 全部删除
-$ git submodule deinit -f -- test-submodule
-$ rm -rf .git/modules/test-submodule
-$ git rm -f test-submodule
+$ git rm test-submodule
 # 查看当前状态
 $ git status
 On branch main
@@ -391,3 +388,4 @@ Changes to be committed:
 
 1. [Git Submodule 使用](https://hanleylee.com/articles/usage-of-git-submodule/)
 1. [手把手教你git submoudule](https://github.com/xhlwill/blog/issues/30)
+2. [How do I remove a submodule?](https://stackoverflow.com/questions/1260748/how-do-i-remove-a-submodule/1260982#1260982)
