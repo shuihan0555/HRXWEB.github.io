@@ -190,7 +190,8 @@ def create_weight() -> np.ndarray:
     tiles = [torch.zeros(ci, ci, step, step) for _ in range(step**2)]
     for i, tile in enumerate(tiles):
         for j in range(ci):
-            tile[j][j][i % step][i // step] = 1.0
+            # tile[j][j][i % step][i // step] = 1.0
+            tile[j][ci - 1 - j][i % step][i // step] = 1.0
 
     weight = torch.cat(tiles, 0).float()
     return weight.cpu().numpy()
@@ -270,11 +271,14 @@ def main():
     remove_slice_and_cat(onnx_model.graph, conv_o_name)
 
     # for input in [0, 1]
-    mean = [0.485, 0.456, 0.406]
-    std = [0.229, 0.224, 0.225]
-    # [0, 1] -> [0, 255]， 输入不除255了，因此 mean 和 std都乘255
-    mean = [m * 255 for m in mean]
-    std = [s * 255 for s in std]
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    # [0, 1] -> [0, 255]
+    mean *= 255
+    std *= 255
+    # input is bgr, not rgb
+    mean = mean[::-1]
+    std = std[::-1]
     slice2conv(onnx_model.graph, conv_o_name, mean, std)
 
     onnx.checker.check_model(onnx_model)
@@ -283,3 +287,106 @@ def main():
 if __name__ == "__main__":
     main()
 ```
+
+以上的代码和之前细分拆解有两处区别，主要是因为yolop训练的时候输入是RGB，但是一般cv::imread 或者从 yuvToRGB 时得到的数据都是 BGR 格式的，多这一次转换就是多一次耗时，因此通过
+
+1. `tile[j][j][i % step][i // step] = 1.0` 改成 `tile[j][ci - 1 - j][i % step][i // step] = 1.0` 就能在 focus 的时候顺带把通道顺序变了。
+2. `mean = mean[::-1]` 和 `std = std[::-1]` 也需要做相应的修改，因为输入的通道顺序是BGR。
+
+上面两处修改就避免了 BGR2RGB 的过程。
+
+# 验证逻辑正确性
+
+```python
+def create_weight(input_rgb:bool=True) -> np.ndarray:
+    ci = 3
+    co = 12
+    step = torch.sqrt(torch.tensor(co / ci)).item()
+    assert step % 1 == 0, "Matched part is not pixel unshuffle."
+    step = int(step)
+
+    tiles = [torch.zeros(ci, ci, step, step) for _ in range(step**2)]
+    for i, tile in enumerate(tiles):
+        for j in range(ci):
+            if input_rgb:
+                tile[j][j][i % step][i // step] = 1.0
+            else: # input is bgr
+                tile[j][ci - 1 - j][i % step][i // step] = 1.0
+
+    weight = torch.cat(tiles, 0).float()
+    return weight.cpu().numpy()
+def test():
+    mean = np.array([0.485, 0.456, 0.406])
+    std = np.array([0.229, 0.224, 0.225])
+    # [0, 1] -> [0, 255]
+    mean *= 255
+    std *= 255
+    input_rgb = False # True means input is RGB, False means input is BGR
+    if not input_rgb:
+        mean = mean[::-1]
+        std = std[::-1]
+    weight_name = 'first_weight'
+    weight_data = create_weight(input_rgb).astype(np.float32)
+    bias_name = 'first_bias'
+    bias_data = np.zeros((12,), dtype=np.float32)
+    weight_data, bias_data = modify_weight_bias(weight_data, bias_data, mean, std)
+    weight_initializer = onnx.numpy_helper.from_array(weight_data, name=weight_name)
+    bias_initializer = onnx.numpy_helper.from_array(bias_data, name=bias_name)
+    input_tensor = onnx.helper.make_tensor_value_info('input', TensorProto.FLOAT, [1, 3, 640, 640])
+    output_tensor = onnx.helper.make_tensor_value_info('output', TensorProto.FLOAT, [1, 12, 320, 320])
+    conv_node = onnx.helper.make_node(
+        'Conv',  # 节点类型
+        inputs=['input', weight_name, bias_name],  # 输入的名称，需要根据实际情况修改
+        outputs=['output'],  # 输出的名称，需要根据实际情况修改
+        name='conv',  # 节点名称
+        kernel_shape=[2, 2],  # 卷积核的形状
+        strides=[2, 2],  # 步幅
+        pads=[0, 0, 0, 0],  # 填充
+        dilations=[1, 1],  # 膨胀率
+        group=1,  # 分组卷积
+        auto_pad='NOTSET'  # 自动填充方式
+    )
+    graph = onnx.helper.make_graph(nodes=[conv_node],  # 节点
+                          name='conv',  # 图的名称
+                          inputs=[input_tensor],  # 输入
+                          outputs=[output_tensor],  # 输出
+                          initializer=[weight_initializer, bias_initializer]  # 初始化器
+                          )
+    model =onnx.helper.make_model(graph, producer_name='onnx-example')
+    onnx.checker.check_model(model)
+    save_path = 'zz_fuse.onnx'
+    onnx.save(model, save_path)
+
+    input = np.random.randn(1, 3, 640, 640).astype(np.float32) * 255.0
+
+    # model output
+    ort_session = ort.InferenceSession(save_path)
+    print(f"Load {save_path} done!")
+    out = ort_session.run(['output'], {'input': input})
+    print(out[0].shape)
+
+    input_div = (input / 255.0)[:, ::-1, :, :].copy()
+    input_div[:, 0] -= 0.485
+    input_div[:, 1] -= 0.456
+    input_div[:, 2] -= 0.406
+    input_div[:, 0] /= 0.229
+    input_div[:, 1] /= 0.224
+    input_div[:, 2] /= 0.225
+    input_div = torch.from_numpy(input_div).float()
+    patch_top_left = input_div[..., ::2, ::2]
+    patch_bot_left = input_div[..., 1::2, ::2]
+    patch_top_right = input_div[..., ::2, 1::2]
+    patch_bot_right = input_div[..., 1::2, 1::2]
+    out_div = torch.cat([patch_top_left, patch_bot_left, patch_top_right, patch_bot_right], 1).cpu().numpy()
+    print(out_div.shape)
+
+    if np.allclose(out[0], out_div, atol=1e-5):
+        print(r"""Conv node has substituted:
+              1. divide input tensor by 255.0,
+              2. substract mean and divide std,
+              3. slice and concat.""")
+    else:
+        print("check failed.")
+```
+
+最终验证成功～
